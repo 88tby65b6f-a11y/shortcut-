@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Attendance Status Template (Easy Edit)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+  *{box-sizing:border-box;}
+  html{ color-scheme: light; }
+  body{
+    margin:0;
+    font-family:'Roboto',Arial,sans-serif;
+    background:#ffffff;
+    color:#333333;
+  }
+  input{
+    color-scheme: light;
+    background-color:#ffffff;
+    font-weight:700;
+  }
+
+  .app-header{
+    background:#0d3d3c;
+    color:#fff;
+    padding:16px 14px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-shadow:0 2px 6px rgba(0,0,0,.18);
+  }
+  .back-arrow{ flex-shrink:0; display:flex; }
+  .app-title{ flex:1; text-align:center; font-size:19px; font-weight:500; margin-right:26px; }
+
+  .howto-banner{
+    max-width:480px;
+    margin:14px auto 0;
+    padding:10px 14px;
+    background:#e7f1fb;
+    border:1px solid #4d7c93;
+    color:#1a3c6e;
+    font-size:13px;
+    text-align:center;
+    border-radius:6px;
+    line-height:1.4;
+  }
+
+  .save-edit-bar{
+    max-width:480px;
+    margin:10px auto 0;
+    padding:0 16px;
+    display:flex;
+    justify-content:flex-end;
+    position:relative;
+  }
+  .menu-btn{
+    background:#4d7c93;
+    color:#fff;
+    border:none;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    font-size:18px;
+    cursor:pointer;
+    line-height:1;
+  }
+  .menu-dropdown{
+    display:none;
+    position:absolute;
+    top:40px;
+    right:16px;
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+    overflow:hidden;
+    z-index:20;
+    min-width:140px;
+  }
+  .menu-dropdown.open{ display:block; }
+  .menu-dropdown button{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:10px 14px;
+    border:none;
+    background:#fff;
+    font-size:14px;
+    font-family:'Roboto',Arial,sans-serif;
+    cursor:pointer;
+    color:#333;
+  }
+  .menu-dropdown button:not(:last-child){ border-bottom:1px solid #eee; }
+  .menu-dropdown button:hover{ background:#f5f5f5; }
+  #clearBtn{ color:#c0392b; }
+
+  .content{ max-width:480px; margin:0 auto; padding:18px 16px 60px; }
+
+  label{ display:block; font-size:14.5px; color:#444; margin:16px 0 6px; }
+
+  /* Editable fields */
+  input.field-input{
+    width:100%;
+    background:#eaeaea;
+    border:1px dashed #3f9142;
+    border-radius:8px;
+    padding:11px 14px;
+    color:#666;
+    font-size:15px;
+    font-family:'Roboto',Arial,sans-serif;
+  }
+  input.field-input:focus{
+    outline:none;
+    border-color:#1a3c6e;
+    background:#fffef0;
+  }
+
+  /* Fixed (non-editable) fields - same look as original */
+  .field-box{
+    background:#eaeaea;
+    border-radius:8px;
+    padding:11px 14px;
+    color:#666;
+    font-size:15px;
+  }
+  .field-box.border{
+    background:#fff;
+    border:1px solid #bbb;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#333;
+  }
+  .chevron{ color:#777; font-size:12px; }
+
+  .show-btn{
+    margin-top:22px;
+    background:#3f9142;
+    color:#fff;
+    border:none;
+    padding:11px 30px;
+    border-radius:6px;
+    font-size:15px;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .show-btn:active{ background:#357a38; }
+
+  h2.section-title{
+    color:#1a3c6e;
+    font-size:18.5px;
+    font-weight:700;
+    margin:30px 0 2px;
+    display:inline-block;
+    border-bottom:3px solid #e0a827;
+    padding-bottom:5px;
+  }
+
+  .summary-list{ margin-top:14px; }
+  .summary-row{ font-size:15px; margin:9px 0; color:#333; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .summary-row b{ font-weight:700; min-width:150px; }
+  .summary-row input{
+    border:1px dashed #3f9142;
+    border-radius:5px;
+    padding:5px 8px;
+    font-size:15px;
+    font-family:'Roboto',Arial,sans-serif;
+    width:90px;
+    color:#333;
+    background:#ffffff;
+  }
+  .summary-row input:focus{ outline:none; border-color:#1a3c6e; background:#fffef0; }
+
+  .table-wrap{ overflow-x:auto; margin-top:12px; -webkit-overflow-scrolling:touch; }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    min-width:460px;
+  }
+  th{
+    background:#4d7c93;
+    color:#fff;
+    font-weight:500;
+    text-align:left;
+    padding:10px 8px;
+  }
+  td{
+    padding:6px 4px;
+    border-bottom:1px solid #ddd;
+    vertical-align:middle;
+  }
+  td input{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid #3f9142;
+    border-radius:6px;
+    padding:8px 6px;
+    font-size:13px;
+    font-family:'Roboto',Arial,sans-serif;
+    background:#fbfff9;
+    color:#333;
+    text-align:center;
+  }
+  td input:focus{ outline:none; border-color:#1a3c6e; background:#fffef0; }
+  td input::placeholder{ color:#9ab89c; }
+
+  .subject-table th:first-child, .subject-table td:first-child{ width:36%; }
+  .subject-table td.subject-name{ background:#a6e2a0; font-weight:500; }
+  .subject-table tbody tr:nth-child(even) td:not(.subject-name){ background:#f1f1f1; }
+  .subject-table tbody tr:nth-child(even) td:not(.subject-name) input{ background:#f1f1f1; }
+
+  .subject-select{
+    margin-top:16px;
+    width:100%;
+    padding:10px 12px;
+    border-radius:6px;
+    border:1px solid #bbb;
+    font-size:15px;
+    background:#fff;
+    color:#333;
+    font-family:'Roboto',Arial,sans-serif;
+  }
+
+  .date-table th:nth-child(3), .date-table td:nth-child(3){ width:30%; }
+  .date-table td.date-cell{ background:#f5b0a7; font-weight:500; white-space:nowrap; }
+  .date-table td.date-cell input{ background:#f5b0a7; border:1px solid #d9736a; border-radius:6px; padding:8px 6px; font-size:13px; font-family:'Roboto',Arial,sans-serif; color:#333; width:100%; font-weight:500; box-sizing:border-box; text-align:center; }
+  .date-table td.date-cell input:focus{ outline:none; border-color:#1a3c6e; background:#fffef0; }
+  .period-cell{ white-space:nowrap; color:#333; }
+  .period-num-input{
+    width:36px !important;
+    border:1px solid #3f9142;
+    border-radius:5px;
+    padding:4px 2px;
+    font-size:13px;
+    font-family:'Roboto',Arial,sans-serif;
+    background:#fbfff9;
+    color:#333;
+    text-align:center;
+    margin-left:2px;
+    box-sizing:border-box;
+  }
+  .period-num-input:focus{ outline:none; border-color:#1a3c6e; background:#fffef0; }
+  .date-table td.subject-name-cell{ font-weight:500; }
+  .date-table td:last-child{ text-align:center; }
+  .date-table td:last-child input{ text-align:center; }
+  .date-table tbody tr:nth-child(even) td:not(.date-cell){ background:#f7f7f7; }
+  .date-table tbody tr:nth-child(even) td:not(.date-cell) input{ background:#f7f7f7; }
+
+  .add-row-btn{
+    margin-top:10px;
+    background:#4d7c93;
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    border-radius:6px;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  footer{
+    max-width:480px;
+    margin:40px auto 0;
+    padding:0 16px;
+    font-size:12px;
+    color:#888;
+  }
+</style>
+</head>
+<body>
+
+  <div class="app-header">
+    <span class="back-arrow">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </span>
+    <span class="app-title">Attendance Status</span>
+  </div>
+
+  <div class="howto-banner">Class, from/to dates, and subject names are fixed. Date-wise dates are editable. Student name and all attendance numbers/status are blank &mdash; click the dashed boxes to type your own data.</div>
+
+  <div class="save-edit-bar">
+    <button class="menu-btn" onclick="toggleMenu()">&#8942;</button>
+    <div class="menu-dropdown" id="menuDropdown">
+      <button id="saveBtn" onclick="saveAndLock(); toggleMenu();">Save</button>
+      <button id="editBtn" style="display:none;" onclick="unlockEdit(); toggleMenu();">Edit</button>
+      <button id="clearBtn" onclick="clearFormData();">Clear Saved Data</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <label>Student Name</label>
+    <input class="field-input" type="text" placeholder="Enter student name" />
+
+    <label>Class</label>
+    <div class="field-box border">B.C.A. - 5th Semester <span class="chevron">&#9660;</span></div>
+
+    <label>From Date</label>
+    <div class="field-box border">22-May-2026</div>
+
+    <label>To Date</label>
+    <div class="field-box border">16-Sep-2026</div>
+
+    <button class="show-btn" onclick="document.getElementById('summary').scrollIntoView({behavior:'smooth'})">Show</button>
+
+    <h2 class="section-title" id="summary">Summary</h2>
+    <div class="summary-list">
+      <div class="summary-row"><b>No. Of Classes</b> : <input type="text" id="totalClasses" placeholder="0" oninput="calcSummary()" /></div>
+      <div class="summary-row"><b>Present (P)</b> : <input type="text" id="presentCount" placeholder="0" oninput="calcSummary()" /></div>
+      <div class="summary-row"><b>Absent (A)</b> : <input type="text" id="absentCount" placeholder="0" readonly /></div>
+      <div class="summary-row"><b>Leave (L)</b> : <input type="text" value="0" readonly /></div>
+      <div class="summary-row"><b>Not Applicable (N)</b> : <input type="text" value="0" readonly /></div>
+      <div class="summary-row"><b>On-Duty (O)</b> : <input type="text" value="0" readonly /></div>
+      <div class="summary-row"><b>Penalty</b> : <input type="text" value="0" readonly /></div>
+      <div class="summary-row"><b>Present %</b> : <input type="text" id="presentPercent" placeholder="0.00" readonly /> %</div>
+    </div>
+
+    <h2 class="section-title">Attendance Records Subject Wise</h2>
+    <div class="table-wrap">
+      <table class="subject-table">
+        <thead>
+          <tr><th>Subject Name</th><th>Total Class Held</th><th>Present Count</th><th>Absent Count</th><th>Penalty</th></tr>
+        </thead>
+        <tbody id="subjectTableBody">
+          <tr><td class="subject-name">COMPUTER NETWORKS</td><td><input type="text" class="held-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="present-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="absent-input" placeholder="0" readonly /></td><td><input type="text" class="penalty-input" value="0" readonly /></td></tr>
+          <tr><td class="subject-name">ADVANCE DATA STRUCTURE</td><td><input type="text" class="held-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="present-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="absent-input" placeholder="0" readonly /></td><td><input type="text" class="penalty-input" value="0" readonly /></td></tr>
+          <tr><td class="subject-name">ARTIFICIAL INTELLIGENCE AND EXPERT SYSTEM</td><td><input type="text" class="held-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="present-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="absent-input" placeholder="0" readonly /></td><td><input type="text" class="penalty-input" value="0" readonly /></td></tr>
+          <tr><td class="subject-name">PROGRAMMING LAB IN ADVANCE DATA STRUCTURE-P</td><td><input type="text" class="held-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="present-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="absent-input" placeholder="0" readonly /></td><td><input type="text" class="penalty-input" value="0" readonly /></td></tr>
+          <tr><td class="subject-name">INTERNSHIP-P</td><td><input type="text" class="held-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="present-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="absent-input" placeholder="0" readonly /></td><td><input type="text" class="penalty-input" value="0" readonly /></td></tr>
+          <tr><td class="subject-name">MENTOR/LIBRARY</td><td><input type="text" class="held-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="present-input" placeholder="0" oninput="calcSubjectRow(this)" /></td><td><input type="text" class="absent-input" placeholder="0" readonly /></td><td><input type="text" class="penalty-input" value="0" readonly /></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addSubjectRow()">+ Add subject row</button>
+
+    <h2 class="section-title">Attendance Records Date Wise</h2>
+    <select class="subject-select">
+      <option>--All--</option>
+    </select>
+    <div class="table-wrap">
+      <table class="date-table" id="dateTable">
+        <thead>
+          <tr><th>Date</th><th>Period No.</th><th>Subject</th><th>Attendance Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="date-cell"><input type="text" value="22 May 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">COMPUTER NETWORKS</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="25 May 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">ADVANCE DATA STRUCTURE</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="26 May 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">ARTIFICIAL INTELLIGENCE AND EXPERT SYSTEM</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="27 May 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">PROGRAMMING LAB IN ADVANCE DATA STRUCTURE-P</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="28 May 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">INTERNSHIP-P</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="29 May 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">MENTOR/LIBRARY</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="01 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">COMPUTER NETWORKS</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="02 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">ADVANCE DATA STRUCTURE</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="03 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">ARTIFICIAL INTELLIGENCE AND EXPERT SYSTEM</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="04 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">PROGRAMMING LAB IN ADVANCE DATA STRUCTURE-P</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="05 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">INTERNSHIP-P</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="08 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">MENTOR/LIBRARY</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="09 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">COMPUTER NETWORKS</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="10 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">ADVANCE DATA STRUCTURE</td><td><input type="text" placeholder="P/A" /></td></tr>
+          <tr><td class="date-cell"><input type="text" value="11 Jun 2026" /></td><td class="period-cell">Lecture No-<input type="text" class="period-num-input" placeholder="#" /></td><td class="subject-name-cell">ARTIFICIAL INTELLIGENCE AND EXPERT SYSTEM</td><td><input type="text" placeholder="P/A" /></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" id="showMoreBtn" onclick="showMoreRows()">Show More</button>
+    <button class="add-row-btn" onclick="addDateRow()">+ Add date row</button>
+
+    <footer>Attendance status layout template.</footer>
+
+  </div>
+
+  <script>
+    // Auto-calculate Absent and Present % from Total Classes and Present
+    // Auto-calculate Absent Count per subject row from Total Held and Present
+    function calcSubjectRow(input){
+      const row = input.closest('tr');
+      const held = parseFloat(row.querySelector('.held-input').value);
+      const present = parseFloat(row.querySelector('.present-input').value);
+      const absentField = row.querySelector('.absent-input');
+      if(!isNaN(held) && !isNaN(present)){
+        const absent = held - present;
+        absentField.value = absent >= 0 ? absent : 0;
+      } else {
+        absentField.value = '';
+      }
+    }
+
+    function calcSummary(){
+      const total = parseFloat(document.getElementById('totalClasses').value);
+      const present = parseFloat(document.getElementById('presentCount').value);
+      const absentField = document.getElementById('absentCount');
+      const percentField = document.getElementById('presentPercent');
+      if(!isNaN(total) && !isNaN(present) && total > 0){
+        const absent = total - present;
+        const percent = (present / total) * 100;
+        absentField.value = absent >= 0 ? absent : 0;
+        percentField.value = percent.toFixed(2);
+      } else {
+        absentField.value = '';
+        percentField.value = '';
+      }
+    }
+
+    // Show only 4 date-wise rows at a time, revealing 4 more on each click
+    const ROWS_PER_PAGE = 4;
+    let visibleRows = ROWS_PER_PAGE;
+    function updateRowVisibility(){
+      const rows = document.querySelectorAll('#dateTable tbody tr');
+      rows.forEach((row, i) => {
+        row.style.display = i < visibleRows ? '' : 'none';
+      });
+      const btn = document.getElementById('showMoreBtn');
+      btn.style.display = visibleRows >= rows.length ? 'none' : 'inline-block';
+    }
+    function showMoreRows(){
+      visibleRows += ROWS_PER_PAGE;
+      updateRowVisibility();
+    }
+    // Track which inputs were editable at page load (exclude always-readonly calculated fields)
+    let editableInputs = [];
+
+    function saveAndLock(){
+      saveFormData();
+      lockFields();
+      localStorage.setItem('attendanceStatusLocked', 'true');
+    }
+
+    function lockFields(){
+      editableInputs.forEach(i => { i.readOnly = true; i.style.opacity = '0.85'; });
+      document.getElementById('saveBtn').style.display = 'none';
+      document.getElementById('editBtn').style.display = 'inline-block';
+    }
+
+    function unlockEdit(){
+      editableInputs.forEach(i => { i.readOnly = false; i.style.opacity = '1'; });
+      document.getElementById('saveBtn').style.display = 'inline-block';
+      document.getElementById('editBtn').style.display = 'none';
+      localStorage.setItem('attendanceStatusLocked', 'false');
+    }
+
+    // Single init, run in the correct order: restore data first, THEN capture
+    // editable inputs, THEN lock (without re-saving, so restored data is never overwritten)
+    function initPage(){
+      updateRowVisibility();
+      restoreFormData();
+      editableInputs = Array.from(document.querySelectorAll('input:not([readonly])'));
+      const wasLocked = localStorage.getItem('attendanceStatusLocked') === 'true';
+      if(wasLocked){
+        lockFields();
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initPage);
+
+    document.addEventListener('input', function(e){
+      if(e.target.tagName === 'INPUT' && !e.target.readOnly){
+        saveFormData();
+      }
+    });
+
+    function addSubjectRow(){
+      const tbody = document.querySelector('#subjectTableBody');
+      const row = tbody.rows[0].cloneNode(true);
+      row.querySelector('.subject-name').textContent = 'SUBJECT NAME';
+      row.querySelector('.held-input').value = '';
+      row.querySelector('.present-input').value = '';
+      row.querySelector('.absent-input').value = '';
+      row.querySelector('.penalty-input').value = '0';
+      tbody.appendChild(row);
+    }
+    function addDateRow(){
+      const tbody = document.querySelector('#dateTable tbody');
+      const row = tbody.rows[0].cloneNode(true);
+      row.querySelectorAll('input').forEach(i => i.value = '');
+      row.querySelector('.subject-name-cell').textContent = 'SUBJECT';
+      tbody.appendChild(row);
+      visibleRows += 1;
+      updateRowVisibility();
+    }
+    // Save & restore filled-in data using localStorage, so reopening the file keeps your entries
+    const STORAGE_KEY = 'attendanceStatusFormData';
+
+    function saveFormData(){
+      const inputs = Array.from(document.querySelectorAll('input:not([readonly])'));
+      const values = inputs.map(i => i.value);
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+      }catch(e){ /* storage unavailable, ignore */ }
+    }
+
+    function restoreFormData(){
+      let saved;
+      try{
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      }catch(e){ saved = null; }
+      if(saved){
+        const inputs = Array.from(document.querySelectorAll('input:not([readonly])'));
+        inputs.forEach((input, i) => {
+          if(saved[i] !== undefined) input.value = saved[i];
+        });
+      }
+      calcSummary();
+      document.querySelectorAll('#subjectTableBody tr').forEach(row => {
+        const heldInput = row.querySelector('.held-input');
+        if(heldInput) calcSubjectRow(heldInput);
+      });
+    }
+
+    function clearFormData(){
+      if(confirm('Clear all saved data on this page?')){
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    function toggleMenu(){
+      document.getElementById('menuDropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e){
+      const dropdown = document.getElementById('menuDropdown');
+      const menuBtn = document.querySelector('.menu-btn');
+      if(dropdown.classList.contains('open') && !dropdown.contains(e.target) && e.target !== menuBtn){
+        dropdown.classList.remove('open');
+      }
+    });
+  </script>
+
+</body>
+</html>
